@@ -9,7 +9,6 @@ def print_board(current_board):
 
 
 print("Welcome to TIC-TAC-TOE!")
-print_board(board)
 
 def player_move(board):
 
