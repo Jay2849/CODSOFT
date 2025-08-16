@@ -1,9 +1,7 @@
 board = [[' ' for _ in range(3)] for _ in range(3)]
 
 def print_board(current_board):
-    """
-    Yeh function game board ko terminal mein print karta hai.
-    """
+ 
     print("-------------")
     for row in current_board:
         print(f"| {row[0]} | {row[1]} | {row[2]} |")
@@ -53,16 +51,83 @@ def check_winner(board, player):
             return True
     return False
 
-print("Welcome to TIC-TAC-TOE!")
+def check_draw(board):
+   
+    for row in board:
+        if ' ' in row:
+            return False 
+    return True 
 
-current_player = 'X'
+def minimax(board, depth, is_maximizing):
 
-for _ in range(5):
-    print_board(board)
+    if check_winner(board, 'O'):
+        return 1
+    if check_winner(board, 'X'):
+        return -1
+    if check_draw(board):
+        return 0
+
+    if is_maximizing: 
+        best_score = -float('inf')
+        for r in range(3):
+            for c in range(3):
+                if board[r][c] == ' ':
+                    board[r][c] = 'O'
+                    score = minimax(board, depth + 1, False)
+                    board[r][c] = ' '
+                    best_score = max(score, best_score)
+        return best_score
+    else:
+        best_score = float('inf')
+        for r in range(3):
+            for c in range(3):
+                if board[r][c] == ' ':
+                    board[r][c] = 'X'
+                    score = minimax(board, depth + 1, True)
+                    board[r][c] = ' '
+                    best_score = min(score, best_score)
+        return best_score
+
+def ai_move(board):
   
+    best_score = -float('inf')
+    move = None
+    for r in range(3):
+        for c in range(3):
+            if board[r][c] == ' ':
+                board[r][c] = 'O'
+                score = minimax(board, 0, False)
+                board[r][c] = ' '
+                if score > best_score:
+                    best_score = score
+                    move = (r, c)
+    if move:
+        board[move[0]][move[1]] = 'O'
+
+
+print("Welcome to TIC-TAC-TOE! Aap 'X' hain aur AI 'O' hai.")
+print_board(board)
+
+while True:
     player_move(board)
-    
-    if check_winner(board, current_player):
-        print("\nCongratulations! Player 'X' jeet gaya!")
-        print_board(board) 
+    print("\nAapke move ke baad board:")
+    print_board(board)
+
+    if check_winner(board, 'X'):
+        print("Congratulations! Aap jeet gaye!")
+        break
+    elif check_draw(board):
+        print("Match draw ho gaya!")
+        break
+
+    print("\nAI ki baari...")
+    ai_move(board)
+    print("AI ke move ke baad board:")
+    print_board(board)
+
+    if check_winner(board, 'O'):
+        print("Sorry, AI jeet gaya!")
+        break
+    elif check_draw(board):
+        print("Match draw ho gaya!")
         break
